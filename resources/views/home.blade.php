@@ -1,7 +1,7 @@
 @extends('layouts.header')
 
 @section('content')
-    <h1 class="text-center mb-5">✨ Featured Jewellery ✨</h1>
+    <h1 class="text-center mb-5">💎 Featured Jewellery 💎</h1>
     <div class="row">
         @forelse ($products as $product)
             <div class="col-md-3 mb-4">

@@ -26,6 +26,8 @@ Route::post('/cart/update/{id}', [CartController::class, 'update'])->name('cart.
 Route::get('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 Route::get('/checkout', [CartController::class, 'checkout'])->name('checkout');
 Route::post('/checkout/process', [CartController::class, 'processCheckout'])->name('checkout.process');
+Route::get('/thankyou', [CartController::class, 'thankyou'])->name('thankyou');
+
 
 /*
 |--------------------------------------------------------------------------
@@ -39,4 +41,5 @@ Route::prefix('admin')->name('admin.')->group(function () {
     Route::get('/products/{id}/edit', [ProductAdminController::class, 'edit'])->name('products.edit');
     Route::put('/products/{id}', [ProductAdminController::class, 'update'])->name('products.update');
     Route::delete('/products/{id}', [ProductAdminController::class, 'destroy'])->name('products.destroy');
+
 });

@@ -86,7 +86,12 @@ class CartController extends Controller
         
          session()->forget('cart');
         
-          return redirect()->route('shop')->with('success', 'Your order has been placed successfully!');
+    return redirect()->route('thankyou')->with('success', 'Your order has been placed successfully!');
 
+    }
+
+    public function thankyou()
+    {
+         return view('thankyou');
     }
 }

@@ -62,6 +62,7 @@
     <main class="container my-5">
         @yield('content')
     </main>
+    <br><br><br>
 
     <!-- Footer -->
     <footer class="text-center">
