@@ -7,22 +7,24 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     // database/migrations/xxxx_create_products_table.php
 
-public function up(): void
-{
-    Schema::create('products', function (Blueprint $table) {
-        $table->id();
-        $table->string('name');
-        $table->decimal('price', 10, 2);
-        $table->text('description')->nullable();
-        $table->string('category')->nullable();
-        $table->integer('stock')->default(0);
-        $table->string('image')->nullable();
-        $table->timestamps();
-    });
-}
+    public function up(): void
+    {
+        Schema::create('products', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->decimal('price', 10, 2);
+            $table->text('description')->nullable();
+            $table->string('category')->nullable();
+            $table->integer('stock')->default(0);
+            $table->string('image')->nullable();
+            $table->decimal('rating', 2, 1)->default(0); // Product rating (0-5 scale)
+            $table->timestamps();
+        });
+    }
 
 
-    public function down() {
+    public function down()
+    {
         Schema::dropIfExists('products');
     }
 };

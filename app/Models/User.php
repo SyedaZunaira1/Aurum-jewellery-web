@@ -45,4 +45,12 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    // RELATIONSHIP Implementation
+    // This defines that a User has MANY Orders.
+    // We can access user's orders using: $user->orders
+    public function orders()
+    {
+        return $this->hasMany(Order::class);
+    }
 }

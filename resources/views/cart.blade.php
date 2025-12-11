@@ -34,10 +34,9 @@
                             <td class="text-break">{{ $item['name'] }}</td>
                             <td>
                                 @if($item['image'])
-                                    <img src="{{ asset($item['image']) }}" 
+                                    <img src="{{ asset('storage/' . $item['image']) }}" 
                                          alt="{{ $item['name'] }}" 
-                                         class="img-fluid rounded"
-                                         style="width:60px; height:60px; object-fit:cover;">
+                                         class="img-fluid rounded cart-product-img">
                                 @else
                                     <img src="https://via.placeholder.com/60x60?text=No+Image" 
                                          alt="No Image" 
@@ -46,44 +45,86 @@
                             </td>
                             <td>${{ number_format($item['price'], 2) }}</td>
                             <td>
-                                <form action="{{ route('cart.update', $id) }}" method="POST" 
-                                      class="d-flex flex-wrap justify-content-center align-items-center gap-2">
+                                {{-- Auto-update quantity input --}}
+                                <form action="{{ route('cart.update', $id) }}" 
+                                      method="POST" 
+                                      class="quantity-form d-flex justify-content-center align-items-center">
                                     @csrf
                                     <input type="number" 
                                            name="quantity" 
                                            value="{{ $item['quantity'] }}" 
                                            min="1" 
-                                           class="form-control form-control-sm text-center" 
-                                           style="max-width:80px;">
-                                    <button class="btn btn-sm btn-primary" type="submit">Update</button>
+                                           class="form-control form-control-sm text-center quantity-input max-width-80"
+                                           data-product-id="{{ $id }}"
+                                           aria-label="Quantity for {{ $item['name'] }}">
                                 </form>
                             </td>
-                            <td>${{ number_format($subtotal, 2) }}</td>
+                            <td class="subtotal-{{ $id }}">${{ number_format($subtotal, 2) }}</td>
                             <td>
                                 <a href="{{ route('cart.remove', $id) }}" 
-                                   class="btn btn-sm btn-danger w-100" 
-                                   onclick="return confirm('Remove this item?')">Remove</a>
+                                   class="btn btn-sm btn-remove w-100" 
+                                   onclick="return confirm('Remove this item?')">
+                                   <i class="fas fa-trash-alt me-1"></i>Remove
+                                </a>
                             </td>
                         </tr>
                     @endforeach
                     <tr>
                         <td colspan="4" class="text-end fw-bold">Total:</td>
-                        <td colspan="2" class="fw-bold">${{ number_format($total, 2) }}</td>
+                        <td colspan="2" class="fw-bold" id="cart-total">${{ number_format($total, 2) }}</td>
                     </tr>
                 </tbody>
             </table>
         </div>
 
-        <!-- Buttons section -->
+        <!-- Buttons section with theme colors -->
         <div class="d-flex flex-wrap justify-content-end gap-2 mt-3">
-            <a href="{{ route('shop') }}" class="btn btn-secondary">Continue Shopping</a>
-            <a href="{{ route('checkout') }}" class="btn btn-success">Proceed to Checkout</a>
+            <a href="{{ route('shop') }}" class="btn btn-continue-shopping">
+                <i class="fas fa-arrow-left me-2"></i>Continue Shopping
+            </a>
+            <a href="{{ route('checkout') }}" class="btn btn-checkout">
+                <i class="fas fa-credit-card me-2"></i>Proceed to Checkout
+            </a>
         </div>
     @endif
 </div>
 
-<!-- ✅ Responsive adjustments -->
+{{-- Auto-update JavaScript --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Get all quantity inputs
+    const quantityInputs = document.querySelectorAll('.quantity-input');
+    
+    quantityInputs.forEach(input => {
+        // Auto-submit on change
+        input.addEventListener('change', function() {
+            const form = this.closest('.quantity-form');
+            if (form) {
+                form.submit();
+            }
+        });
+        
+        // Optional: Auto-submit on blur (when user clicks away)
+        input.addEventListener('blur', function() {
+            const form = this.closest('.quantity-form');
+            if (form && this.value !== this.defaultValue) {
+                form.submit();
+            }
+        });
+    });
+});
+</script>
+
+{{-- Responsive adjustments with theme colors --}}
 <style>
+/* Theme color variables */
+:root {
+    --primary-gold: #d4af37;
+    --dark-gold: #b8941e;
+    --deep-navy: #1a1a2e;
+    --navy-blue: #16213e;
+}
+
 /* Ensure no horizontal scrollbars */
 html, body {
     overflow-x: hidden;
@@ -96,9 +137,82 @@ html, body {
     vertical-align: middle;
 }
 
-/* Buttons and input adjustments */
+/* Theme-colored buttons */
 .btn {
-    border-radius: 8px;
+    border-radius: 50px;
+    padding: 12px 30px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+}
+
+/* Continue Shopping Button - Gold Theme */
+.btn-continue-shopping {
+    background: linear-gradient(135deg, var(--primary-gold), var(--dark-gold));
+    border: none;
+    color: white;
+    box-shadow: 0 4px 15px rgba(212, 175, 55, 0.3);
+}
+
+.btn-continue-shopping:hover {
+    background: linear-gradient(135deg, var(--dark-gold), var(--primary-gold));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+    color: white;
+}
+
+/* Checkout Button - Navy Theme */
+.btn-checkout {
+    background: linear-gradient(135deg, var(--deep-navy), var(--navy-blue));
+    border: none;
+    color: white;
+    box-shadow: 0 4px 15px rgba(26, 26, 46, 0.3);
+}
+
+.btn-checkout:hover {
+    background: linear-gradient(135deg, var(--navy-blue), var(--deep-navy));
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(26, 26, 46, 0.5);
+    color: white;
+}
+
+/* Remove Button - Subtle dark theme */
+.btn-remove {
+    background: linear-gradient(135deg, #6c757d, #5a6268);
+    border: none;
+    color: white;
+    transition: all 0.3s ease;
+    font-size: 0.85rem;
+}
+
+.btn-remove:hover {
+    background: linear-gradient(135deg, #5a6268, #495057);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(108, 117, 125, 0.4);
+    color: white;
+}
+
+/* Quantity input styling */
+.quantity-input {
+    transition: border-color 0.3s ease;
+    border: 2px solid #e0e0e0;
+}
+
+.max-width-80 {
+    max-width: 80px;
+}
+
+.cart-product-img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    padding: 5px;
+    background: #f8f9fa;
+}
+
+.quantity-input:focus {
+    border-color: var(--primary-gold);
+    box-shadow: 0 0 0 0.2rem rgba(212, 175, 55, 0.25);
 }
 
 /* Tablet screens */
