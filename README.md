@@ -27,7 +27,7 @@ Aurum Jewellery Shop is a web-based e-commerce application built with Laravel. I
 
 1.  **Clone the repository**
     ```bash
-    git clone <repository-url>
+    git clone https://github.com/SyedaZunaira1/Aurum-jewellery-web.git
     cd Aurum-Jewellery-shop
     ```
 
