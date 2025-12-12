@@ -96,6 +96,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::get('/products/{id}/edit', [ProductAdminController::class, 'edit'])->name('products.edit');
         Route::put('/products/{id}', [ProductAdminController::class, 'update'])->name('products.update');
         Route::delete('/products/{id}', [ProductAdminController::class, 'destroy'])->name('products.destroy');
+        // Category Deletion Route (Handle mass update/delete of products in a category)
+        Route::delete('/products/category/delete', [ProductAdminController::class, 'deleteCategory'])->name('products.deleteCategory');
     });
 });
 

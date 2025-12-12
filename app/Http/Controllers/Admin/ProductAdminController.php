@@ -18,6 +18,11 @@ class ProductAdminController extends Controller
             $query->where('category', $request->category);
         }
 
+        // Search by Product Name
+        if ($request->has('search') && $request->search != '') {
+            $query->where('name', 'LIKE', '%' . $request->search . '%');
+        }
+
         $products = $query->paginate(10);
         // Get unique categories from database, with default categories as fallback
         $categories = Product::distinct()->pluck('category')->filter()->sort()->values()->toArray();
@@ -26,6 +31,38 @@ class ProductAdminController extends Controller
         }
 
         return view('admin.products.index', compact('products', 'categories'));
+    }
+
+    // Delete Category Implementation
+    // This allows moving products to 'Uncategorized' or deleting them completely.
+    // ACTION: 'move' -> Updates category of products. 'delete' -> Deletes products & images.
+    public function deleteCategory(Request $request)
+    {
+        $request->validate([
+            'category' => 'required|string|exists:products,category',
+            'action' => 'required|in:move,delete'
+        ]);
+
+        $category = $request->input('category');
+        $action = $request->input('action');
+
+        if ($action == 'delete') {
+            // Delete all products in this category
+            $products = Product::where('category', $category)->get();
+            $count = $products->count();
+
+            foreach ($products as $product) {
+                if ($product->image && Storage::disk('public')->exists($product->image)) {
+                    Storage::disk('public')->delete($product->image);
+                }
+                $product->delete();
+            }
+            return redirect()->route('admin.products.index')->with('success', "Category '$category' removed. $count products were permanently deleted.");
+        } else {
+            // Move products to 'Uncategorized'
+            $count = Product::where('category', $category)->update(['category' => 'Uncategorized']);
+            return redirect()->route('admin.products.index')->with('success', "Category '$category' removed. $count products moved to 'Uncategorized'.");
+        }
     }
 
     public function create()

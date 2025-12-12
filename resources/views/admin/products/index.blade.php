@@ -69,18 +69,77 @@
                 <i class="fas fa-plus"></i> Add New Product
             </a>
 
-            <form method="GET" action="{{ route('admin.products.index') }}" class="d-flex gap-2">
-                <select name="category" class="form-select border-secondary" style="width: 200px;">
-                    <option value="">All Categories</option>
-                    @foreach($categories as $cat)
-                        <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
-                    @endforeach
-                </select>
-                <button type="submit" class="btn btn-dark">Filter</button>
-                @if(request('category'))
-                    <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary">Clear</a>
+            <div class="d-flex flex-wrap gap-3">
+                <!-- Search Form -->
+                <form method="GET" action="{{ route('admin.products.index') }}" class="d-flex gap-2">
+                    <input type="text" name="search" class="form-control border-secondary" placeholder="Search product..."
+                        value="{{ request('search') }}">
+                    <button type="submit" class="btn btn-dark"><i class="fas fa-search"></i></button>
+                    @if(request('search'))
+                        <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary" title="Clear Search">
+                            <i class="fas fa-times"></i>
+                        </a>
+                    @endif
+                </form>
+
+                <!-- Filter Form -->
+                <form method="GET" action="{{ route('admin.products.index') }}" class="d-flex gap-2">
+                    <!-- Preserve search if exists -->
+                    @if(request('search'))
+                        <input type="hidden" name="search" value="{{ request('search') }}">
+                    @endif
+
+                    <select name="category" class="form-select border-secondary" style="width: 200px;">
+                        <option value="">All Categories</option>
+                        @foreach($categories as $cat)
+                            <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                        @endforeach
+                    </select>
+                    <button type="submit" class="btn btn-dark">Filter</button>
+                    @if(request('category'))
+                        <a href="{{ route('admin.products.index') }}" class="btn btn-outline-secondary">Clear</a>
+                    @endif
+                </form>
+
+                <!-- Delete Category Dropdown -->
+                @if(request('category') && request('category') != '')
+                    <div class="btn-group">
+                        <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            <i class="fas fa-trash-alt"></i> Delete Category
+                        </button>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <form method="POST" action="{{ route('admin.products.deleteCategory') }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <input type="hidden" name="category" value="{{ request('category') }}">
+                                    <input type="hidden" name="action" value="move">
+                                    <button type="submit" class="dropdown-item"
+                                        onclick="return confirm('Are you sure? Products will be moved to \'Uncategorized\'.')">
+                                        Keep Products (Move to Uncategorized)
+                                    </button>
+                                </form>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form method="POST" action="{{ route('admin.products.deleteCategory') }}">
+                                    @csrf
+                                    @method('DELETE')
+                                    <input type="hidden" name="category" value="{{ request('category') }}">
+                                    <input type="hidden" name="action" value="delete">
+                                    <button type="submit" class="dropdown-item text-danger"
+                                        onclick="return confirm('WARNING: Are you sure? All products in this category will be PERMANENTLY DELETED.')">
+                                        Delete Category & All Products
+                                    </button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
                 @endif
-            </form>
+            </div>
         </div>
 
         <div class="card shadow-sm border-0">
