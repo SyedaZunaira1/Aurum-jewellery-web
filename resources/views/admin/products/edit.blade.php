@@ -86,11 +86,68 @@
         <div class="mb-3">
             <label for="image" class="form-label">Image</label><br>
             @if($product->image)
-                <img src="{{ asset('storage/' . $product->image) }}" alt="Product Image" style="width:150px;" class="mb-2">
+                <img src="{{ asset('storage/' . $product->image) }}" alt="Product Image" style="width:150px;" class="mb-2"
+                    id="currentImage">
             @endif
-            <input type="file" id="image" name="image" class="form-control mt-2" aria-label="Product Image">
+            <input type="file" id="image" name="image" class="form-control mt-2" aria-label="Product Image"
+                accept="image/*">
+
+            <div id="imagePreviewContainer" class="mt-3" style="display: none;">
+                <label class="form-label">New Image Preview:</label>
+                <img id="imagePreview" src="#" alt="Image Preview"
+                    style="max-width: 200px; height: auto; border-radius: 10px; border: 1px solid #ddd; padding: 5px;">
+            </div>
+            <div id="imageError" class="text-danger mt-2" style="display: none;"></div>
         </div>
 
         <button type="submit" class="btn btn-primary">Update Product</button>
     </form>
+
+    <script>
+        // Image Preview and Validation Script
+        document.getElementById('image').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            const previewContainer = document.getElementById('imagePreviewContainer');
+            const previewImage = document.getElementById('imagePreview');
+            const errorContainer = document.getElementById('imageError');
+            const currentImage = document.getElementById('currentImage');
+
+            // Reset state
+            previewContainer.style.display = 'none';
+            errorContainer.style.display = 'none';
+            errorContainer.textContent = '';
+
+            if (file) {
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+                if (!validTypes.includes(file.type)) {
+                    errorContainer.textContent = 'Invalid file type. Please upload a JPEG or PNG image.';
+                    errorContainer.style.display = 'block';
+                    this.value = ''; // Clear input
+                    return;
+                }
+
+                // Validate file size (2MB max)
+                const maxSize = 2 * 1024 * 1024; // 2MB
+                if (file.size > maxSize) {
+                    errorContainer.textContent = 'File size too large. Maximum size is 2MB.';
+                    errorContainer.style.display = 'block';
+                    this.value = ''; // Clear input
+                    return;
+                }
+
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    previewImage.src = e.target.result;
+                    previewContainer.style.display = 'block';
+
+                    // Optional: Hide current image if a new one is selected? 
+                    // Usually better to keep it visible or maybe imply it's being replaced. 
+                    // Let's just show the new one below it.
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
 @endsection
