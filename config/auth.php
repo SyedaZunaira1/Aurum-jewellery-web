@@ -45,6 +45,13 @@ return [
             'driver' => 'session',
             'provider' => 'admins',
         ],
+
+        // PASSPORT: API guard ko 'passport' driver set kiya hai.
+        // Ye request headers mein 'Authorization: Bearer <token>' ko check karega.
+        'api' => [
+            'driver' => 'passport',
+            'provider' => 'users',
+        ],
     ],
 
     /*
